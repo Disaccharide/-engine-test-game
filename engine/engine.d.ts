@@ -41,12 +41,45 @@ declare namespace engine {
         notify(deltaTime: number): void;
     }
 }
+declare let imageJason: {
+    id: string;
+    width: number;
+    height: number;
+}[];
 declare namespace engine {
-    interface Drawable {
-        update(): any;
+    class ImageResource {
+        bitmapData: HTMLImageElement;
+        id: string;
+        width: number;
+        height: number;
+        constructor(id: string, width: number, height: number);
     }
-    abstract class DisplayObject {
-        type: string;
+    class Resourse {
+        resourses: ImageResource[];
+        private static Res;
+        constructor();
+        static getInstance(): Resourse;
+        getRes(id: string): ImageResource;
+        initial(): void;
+    }
+}
+declare namespace engine {
+    class EventManager {
+        targetArray: DisplayObject[];
+        static eventManager: EventManager;
+        constructor();
+        static getInstance(): EventManager;
+    }
+    class MyEvent {
+        eventType: string;
+        ifCapture: boolean;
+        target: DisplayObject;
+        func: Function;
+        constructor(eventType: string, func: Function, target: DisplayObject, ifCapture: boolean);
+    }
+    interface Drawable {
+    }
+    abstract class DisplayObject implements Drawable {
         x: number;
         y: number;
         scaleX: number;
@@ -58,25 +91,30 @@ declare namespace engine {
         globalMatrix: Matrix;
         parent: DisplayObjectContainer;
         touchEnabled: boolean;
+        type: string;
+        eventArray: MyEvent[];
         constructor(type: string);
         update(): void;
+        addEventListener(eventType: string, func: Function, target: DisplayObject, ifCapture: boolean): void;
         abstract hitTest(x: number, y: number): DisplayObject;
     }
     class Bitmap extends DisplayObject {
-        image: HTMLImageElement;
+        texture: ImageResource;
         constructor();
         hitTest(x: number, y: number): this;
     }
     class TextField extends DisplayObject {
         text: string;
         constructor();
+        _measureTextWidth: number;
         hitTest(x: number, y: number): this;
     }
     class DisplayObjectContainer extends DisplayObject {
-        constructor();
         children: DisplayObject[];
+        constructor();
         update(): void;
         addChild(child: DisplayObject): void;
+        removeChild(child: DisplayObject): void;
         hitTest(x: any, y: any): DisplayObject;
     }
 }
